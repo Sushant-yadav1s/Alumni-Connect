@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signup Form</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .signup-container {
+            max-width: 400px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #333;
+        }
+
+        #alumniFields {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Sign Up</h2>
+        <form id="signupForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required />
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" required />
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" required />
+
+            <label for="user_type">User Type:</label>
+            <select id="user_type" onchange="toggleFields()">
+                <option value="student">Student</option>
+                <option value="alumni">Alumni</option>
+            </select>
+
+            <div id="alumniFields">
+                <label for="batch">Batch:</label>
+                <input type="text" id="batch" />
+
+                <label for="currentCompany">Current Company:</label>
+                <input type="text" id="currentCompany" />
+
+                <label for="jobTitle">Job Title:</label>
+                <input type="text" id="jobTitle" />
+            </div>
+
+            <button type="submit" class="btn">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        // Toggle Fields based on User Type
+        function toggleFields() {
+            const userType = document.getElementById("user_type").value;
+            const alumniFields = document.getElementById("alumniFields");
+            alumniFields.style.display = userType === "alumni" ? "block" : "none";
+        }
+
+        // Form Submission
+        document.getElementById("signupForm").onsubmit = async function (event) {
+            event.preventDefault(); // Prevent actual form submission
+
+            // Get form data
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const userType = document.getElementById("user_type").value;
+            const batch = userType === 'alumni' ? document.getElementById("batch").value : null;
+            const currentCompany = userType === 'alumni' ? document.getElementById("currentCompany").value : null;
+            const jobTitle = userType === 'alumni' ? document.getElementById("jobTitle").value : null;
+
+            // Prepare data for sending
+            const data = {
+                name,
+                email,
+                password,
+                user_type: userType,
+                batch,
+                currentCompany,
+                jobTitle
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/api/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message); // User registered successfully
+                    // Optionally, redirect to login or another page
+                } else {
+                    alert(result.error); // Handle error
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+    </script>
+</body>
+</html>

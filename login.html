@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Form</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #333;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="email">Email:</label>
+            <input type="email" id="email" required />
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" required />
+
+            <button type="submit" class="btn">Login</button>
+        </form>
+        <div id="message"></div> <!-- Message Display -->
+    </div>
+
+    <script>
+        // Form Submission
+        document.getElementById("loginForm").onsubmit = function (event) {
+            event.preventDefault(); // Prevent actual form submission
+
+            // Gather form data
+            const formData = {
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value,
+            };
+
+            // Send data to your backend
+            fetch("http://localhost:3000/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageDiv = document.getElementById("message");
+                if (data.success) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.style.color = "green"; // Change text color for success
+                    window.location.href = "dashboard.html"; // Redirect on success
+                } else {
+                    messageDiv.textContent = data.message; // Display error message on failure
+                    messageDiv.style.color = "red"; // Change text color for error
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        };
+    </script>
+</body>
+</html>
